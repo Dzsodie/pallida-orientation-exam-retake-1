@@ -75,6 +75,27 @@ function getInput(e) {
   let size = document.querySelector('select[name="size"]').value;
   let quantity = document.querySelector('input').value;
   document.querySelector('form').reset();
-  console.log(item, size, quantity);
+  queryGetTotal(item, size, quantity)
 }
 
+function queryGetTotal(item, size, quantity) {
+  let request = new XMLHttpRequest();
+  request.open('GET', `http://localhost:8080/price-check/?item=${item}&size=${size}&quantity=${quantity}`);
+  request.setRequestHeader('Accept', 'application/json');
+  request.onreadystatechange = function() {
+    if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+      let rows = JSON.parse(request.response);
+      displayResult(rows);
+    }
+  }
+  request.send();
+}
+
+function displayResult(rows) {
+  const p = document.querySelector('p');
+  if (rows.result === 'ok') {
+    p.textContent = `The item can be ordered at the price of ${rows.total_price}`;
+  } else {
+    p.textContent = rows.result;
+  }
+}

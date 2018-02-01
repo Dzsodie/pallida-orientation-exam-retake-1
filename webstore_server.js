@@ -46,26 +46,19 @@ app.get('/price-check', function(req, res) {
     }
     let stack = (JSON.stringify(rows[0].in_store))
     let response;
-    if (req.query.quantity > 3 && req.query.quantity < stack) {
+    if (req.query.quantity > 3 && parseInt(req.query.quantity) <= stack) {
       response = {
         result: 'ok',
         total_price: JSON.stringify(rows[0].unit_price)
       }
-    } else if (req.query.quantity < 3) {
+    } else if (req.query.quantity <= 3) {
       response = {result: 'please order at least 3, one for yourself, two for your friends'}
-    } else if (req.query.quantity > stack) {
+    } else if (req.query.quantity >= stack) {
       response = {result: 'error, we don\'t have enough items in store'}      
     }
     res.json(response);
   })
 })
-
-// in_store = "${req.query.quantity}"
-
-// app.get('/warehouse/:fields', function(req, res) {
-//   let select = `SELECT DISTINCT size FROM warehouse`;
-//   connQuery(res, select);
-// })
 
 function connQuery(res, select) {
   conn.query(select, function(err, rows) {
